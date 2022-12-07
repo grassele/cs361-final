@@ -3,7 +3,6 @@ require 'json'
 require 'test/unit'
 
 class TestGis < Test::Unit::TestCase
-
   def test_waypoints
     w = Waypoint.new(-121.5, 45.5, 30, "home", "flag")
     expected = JSON.parse('{"type": "Feature","properties": {"title": "home","icon": "flag"},"geometry": {"type": "Point","coordinates": [-121.5,45.5,30]}}')
@@ -28,7 +27,10 @@ class TestGis < Test::Unit::TestCase
       Point.new(-121, 46),
     ]
 
-    ts2 = [ Point.new(-121, 45), Point.new(-121, 46), ]
+    ts2 = [ 
+      Point.new(-121, 45), 
+      Point.new(-121, 46), 
+    ]
 
     ts3 = [
       Point.new(-121, 45.5),
