@@ -7,7 +7,8 @@ class Track
     @name = name
   end
 
-  def get_track_json()
+  # CHANGE: deleted extraneous comments, changed get_track_json to get_json for interface
+  def get_json()
     j = '{'
     j += '"type": "Feature", '
     if @name != nil
@@ -18,23 +19,20 @@ class Track
     j += '"geometry": {'
     j += '"type": "MultiLineString",'
     j +='"coordinates": ['
-    # Loop through all the segment objects
     @segments.each_with_index do |s, index|
       if index > 0
         j += ","
       end
       j += '['
-      # Loop through all the coordinates in the segment
       tsj = ''
-      s.coordinate_set.each do |c|
+      s.coordinate_set.each do |coord|
         if tsj != ''
           tsj += ','
         end
-        # Add the coordinate
         tsj += '['
-        tsj += "#{c.lon},#{c.lat}"
-        if c.ele != nil
-          tsj += ",#{c.ele}"
+        tsj += "#{coord.lon},#{coord.lat}"
+        if coord.ele != nil
+          tsj += ",#{coord.ele}"
         end
         tsj += ']'
       end
@@ -54,7 +52,8 @@ class TrackSegment
   end
 end
 
-# CHANGE: deleted Point class - DRY (everything contained in Point could be done in Waypoint)
+# CHANGE: deleted Point class - DRY (everything contained in Point could be done in Waypoint), some Waypoint fields will
+#   just not be used in TrackSegment objects but that's okay bc they set to nil by default
 
 class Waypoint
   attr_reader :lat, :lon, :ele, :name, :type
@@ -67,7 +66,8 @@ class Waypoint
     @type = type
   end
 
-  def get_waypoint_json(indent=0)
+  # CHANGE: deleted extraneous comments, changed get_waypoint_json to get_json for interface
+  def get_json(indent=0)
     j = '{"type": "Feature",'
     # if name is not nil or type is not nil
     j += '"geometry": {"type": "Waypoint","coordinates": '
@@ -81,11 +81,11 @@ class Waypoint
       if name != nil
         j += '"title": "' + @name + '"'
       end
-      if type != nil  # if type is not nil
+      if type != nil
         if name != nil
           j += ','
         end
-        j += '"icon": "' + @type + '"'  # type is the icon
+        j += '"icon": "' + @type + '"'
       end
       j += '}'
     end
@@ -94,7 +94,7 @@ class Waypoint
   end
 end
 
-
+# CHANGE: deleted extraneous comments
 class World
   def initialize(name, things)
     @name = name
@@ -105,19 +105,15 @@ class World
   def add_feature(f)
     @features.append(f)
   end
-
+   
   def to_geojson(indent=0)
-    # Write stuff
     s = '{"type": "FeatureCollection","features": ['
     @features.each_with_index do |f,i|
       if i != 0
         s +=","
       end
-        if f.class == Track
-            s += f.get_track_json
-        elsif f.class == Waypoint
-            s += f.get_waypoint_json
-      end
+      # CHANGE: created interface so that World doesn't have to know the classes of the features
+      s += f.get_json
     end
     s + "]}"
   end
