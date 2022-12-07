@@ -1,14 +1,10 @@
 #!/usr/bin/env ruby
 
+# CHANGE: instead of creating TrackSegments in Track, use dependency injection by passing Track TrackSegments array
 class Track
   def initialize(segments, name=nil)
+    @segments = segments
     @name = name
-    segment_objects = []
-    segments.each do |s|
-      segment_objects.append(TrackSegment.new(s))
-    end
-    # set segments to segment_objects
-    @segments = segment_objects
   end
 
   def get_track_json()
@@ -30,7 +26,7 @@ class Track
       j += '['
       # Loop through all the coordinates in the segment
       tsj = ''
-      s.coordinates.each do |c|
+      s.coordinate_set.each do |c|
         if tsj != ''
           tsj += ','
         end
@@ -49,16 +45,16 @@ class Track
   end
 end
 
-
+# CHANGE: renamed coordinates to coordinate_set for readability
 class TrackSegment
-  attr_reader :coordinates
+  attr_reader :coordinate_set
 
-  def initialize(coordinates)
-    @coordinates = coordinates
+  def initialize(coordinate_set)
+    @coordinate_set = coordinate_set
   end
 end
 
-# deleted Point class - DRY (everything contained in Point can be done in Waypoint)
+# CHANGE: deleted Point class - DRY (everything contained in Point could be done in Waypoint)
 
 class Waypoint
   attr_reader :lat, :lon, :ele, :name, :type
@@ -131,21 +127,24 @@ def main()
   w = Waypoint.new(-121.5, 45.5, 30, "home", "flag")
   w2 = Waypoint.new(-121.5, 45.6, nil, "store", "dot")
   
-  ts1 = [
+  ts1 = TrackSegment.new([
     Waypoint.new(-122, 45),
     Waypoint.new(-122, 46),
     Waypoint.new(-121, 46),
-  ]
+    ]
+  )
 
-  ts2 = [
+  ts2 = TrackSegment.new([
     Waypoint.new(-121, 45), 
-    Waypoint.new(-121, 46), 
-  ]
+    Waypoint.new(-121, 46),
+    ] 
+  )
 
-  ts3 = [
+  ts3 = TrackSegment.new([
     Waypoint.new(-121, 45.5),
     Waypoint.new(-122, 45.5),
-  ]
+    ]
+  )
 
   t = Track.new([ts1, ts2], "track 1")
   t2 = Track.new([ts3], "track 2")
