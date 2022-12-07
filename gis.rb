@@ -21,8 +21,9 @@ class Track
       end
       j += '['
       tsj = ''
-      # NOTE: I wanted to address the "coordinate_set" (TrackSegment) and "coord.lon", "coord.lat", etc. (Waypoint)
-      #   dependencies but it didn't work out - more below above the commented out get_segments_json function
+      # NOTE: I wanted to address the "coordinate_set" (TrackSegment) and "coord.lon", "coord.lat", etc. (Waypoint -
+      #   Demeter violation) dependencies but it didn't work out - more below above the commented out get_segments_json 
+      #   function
       s.coordinate_set.each do |coord|
         if tsj != ''
           tsj += ','
@@ -98,30 +99,24 @@ class Waypoint
     @type = type
   end
 
-  # CHANGE: deleted extraneous comments, changed get_waypoint_json to get_json for interface
+  # CHANGE: deleted extraneous comments, changed get_waypoint_json to get_json for interface, rearranged code 
+  #   to be consistent ("properties" then "geometry") and to eliminate unnecessary space
   def get_json(indent=0)
-    j = '{"type": "Feature",'
-    # if name is not nil or type is not nil
-    j += '"geometry": {"type": "Waypoint","coordinates": '
-    j += "[#{@lon},#{@lat}"
-    if ele != nil
+    j = '{"type": "Feature", "properties": {'
+    if @name
+      j += '"title": "' + @name + '"'
+    end
+    if @type
+      if @name
+        j += ','
+      end
+      j += '"icon": "' + @type + '"'
+    end
+    j += '}, "geometry": {"type": "Waypoint","coordinates": ' + "[#{@lon},#{@lat}"
+    if @ele
       j += ",#{@ele}"
     end
-    j += ']},'
-    if name != nil or type != nil
-      j += '"properties": {'
-      if name != nil
-        j += '"title": "' + @name + '"'
-      end
-      if type != nil
-        if name != nil
-          j += ','
-        end
-        j += '"icon": "' + @type + '"'
-      end
-      j += '}'
-    end
-    j += "}"
+    j += ']}}'
     return j
   end
 end
@@ -133,7 +128,7 @@ class World
     @features = things
   end
 
-  # CHANGE: changed argument passed to append from 't' to 'f' bc 'f' is what's being passed to add_feature...
+  # CHANGE: changed argument passed to append from 't' to 'f' bc 'f' is what's being passed to add_feature
   def add_feature(f)
     @features.append(f)
   end
