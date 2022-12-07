@@ -14,14 +14,15 @@ class Track
       j += '"properties": {"title": "' + @name + '"},'
     end
     j += '"geometry": {"type": "MultiLineString", "coordinates": ['
+    # NOTE: this was a failed attempt at breaking up the function: j += "#{get_segments_json}"
     @segments.each_with_index do |s, index|
       if index > 0
         j += ","
       end
       j += '['
       tsj = ''
-      # NOTE: didn't like any of the alternatives to this dependency that I thought of... so Track knows that each of its segments
-      #   has a coordinate_set
+      # NOTE: I wanted to address the "coordinate_set" (TrackSegment) and "coord.lon", "coord.lat", etc. (Waypoint)
+      #   dependencies but it didn't work out - more below above the commented out get_segments_json function
       s.coordinate_set.each do |coord|
         if tsj != ''
           tsj += ','
@@ -36,8 +37,42 @@ class Track
       j += tsj
       j += ']'
     end
-    j + ']}}'
+    j += ']}}'
   end
+
+  # NOTE: I wanted to create the below new function to better break down the Track get_json function, but I 
+  #   couldn't get it to work and I ran out of time. "s.coordinate_set.each do |coord|" was also a line I'd
+  #   intended to abstract a little by creating a get_json function inside TrackSegment class, which would in itself 
+  #   call another get_json function on the Waypoints... But the existing Waypoint get_json function has other
+  #   functionality. So maybe Waypoint would need to have a separate get_coordinates function that would be called within 
+  #   its own get_json function, but could also be used to somewhat simplify TrackSegment / and Track dependencies on 
+  #   getting coordinates from Waypoint objects. This was the most challenging part of the coding section for me.
+  #   I know that I could have done more moving repetitive code to functions too.
+
+  # def get_segments_json()
+  #   new_j = ''
+  #   @segments.each_with_index do |s, index|
+  #     if index > 0
+  #       new_j += ","
+  #     end
+  #     new_j += '['
+  #     tsj = ''
+  #     # DEPENDENCY! #
+  #     s.coordinate_set.each do |coord|
+  #       if tsj != ''
+  #         tsj += ','
+  #       end
+  #       tsj += '['
+  #       tsj += "#{coord.lon},#{coord.lat}"
+  #       if coord.ele
+  #         tsj += ",#{coord.ele}"
+  #       end
+  #       tsj += ']'
+  #     end
+  #     new_j += tsj
+  #     new_j += ']'
+  #   end
+  # end
 end
 
 # CHANGE: renamed coordinates to coordinate_set for readability
