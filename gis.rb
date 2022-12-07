@@ -58,17 +58,7 @@ class TrackSegment
   end
 end
 
-
-class Point
-  attr_reader :lat, :lon, :ele
-
-  def initialize(lon, lat, ele=nil)
-    @lon = lon
-    @lat = lat
-    @ele = ele
-  end
-end
-
+# deleted Point class - DRY (everything contained in Point can be done in Waypoint)
 
 class Waypoint
   attr_reader :lat, :lon, :ele, :name, :type
@@ -84,7 +74,7 @@ class Waypoint
   def get_waypoint_json(indent=0)
     j = '{"type": "Feature",'
     # if name is not nil or type is not nil
-    j += '"geometry": {"type": "Point","coordinates": '
+    j += '"geometry": {"type": "Waypoint","coordinates": '
     j += "[#{@lon},#{@lat}"
     if ele != nil
       j += ",#{@ele}"
@@ -140,17 +130,21 @@ end
 def main()
   w = Waypoint.new(-121.5, 45.5, 30, "home", "flag")
   w2 = Waypoint.new(-121.5, 45.6, nil, "store", "dot")
+  
   ts1 = [
-  Point.new(-122, 45),
-  Point.new(-122, 46),
-  Point.new(-121, 46),
+    Waypoint.new(-122, 45),
+    Waypoint.new(-122, 46),
+    Waypoint.new(-121, 46),
   ]
 
-  ts2 = [ Point.new(-121, 45), Point.new(-121, 46), ]
+  ts2 = [
+    Waypoint.new(-121, 45), 
+    Waypoint.new(-121, 46), 
+  ]
 
   ts3 = [
-    Point.new(-121, 45.5),
-    Point.new(-122, 45.5),
+    Waypoint.new(-121, 45.5),
+    Waypoint.new(-122, 45.5),
   ]
 
   t = Track.new([ts1, ts2], "track 1")
