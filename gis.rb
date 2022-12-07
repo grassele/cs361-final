@@ -11,7 +11,7 @@ class Track
     j = '{'
     j += '"type": "Feature", '
     if @name != nil
-      j+= '"properties": {'
+      j += '"properties": {'
       j += '"title": "' + @name + '"'
       j += '},'
     end
@@ -38,8 +38,8 @@ class Track
         end
         tsj += ']'
       end
-      j+=tsj
-      j+=']'
+      j += tsj
+      j += ']'
     end
     j + ']}}'
   end
@@ -101,8 +101,9 @@ class World
     @features = things
   end
 
+  # CHANGE: changed argument passed to append from 't' to 'f' bc 'f' is what's being passed to add_feature...
   def add_feature(f)
-    @features.append(t)
+    @features.append(f)
   end
 
   def to_geojson(indent=0)
