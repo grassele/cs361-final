@@ -26,7 +26,7 @@ class TestGis < Test::Unit::TestCase
       Waypoint.new(-122, 46),
       Waypoint.new(-121, 46),
       ]
-  )
+    )
 
     ts2 = TrackSegment.new([
       Waypoint.new(-121, 45), 
@@ -39,7 +39,6 @@ class TestGis < Test::Unit::TestCase
       Waypoint.new(-122, 45.5),
       ]
     )
-    
 
     t = Track.new([ts1, ts2], "track 1")
     expected = JSON.parse('{"type": "Feature", "properties": {"title": "track 1"},"geometry": {"type": "MultiLineString","coordinates": [[[-122,45],[-122,46],[-121,46]],[[-121,45],[-121,46]]]}}')
