@@ -9,29 +9,26 @@ class Track
 
   # CHANGE: deleted extraneous comments, changed get_track_json to get_json for interface
   def get_json()
-    j = '{'
-    j += '"type": "Feature", '
-    if @name != nil
-      j += '"properties": {'
-      j += '"title": "' + @name + '"'
-      j += '},'
+    j = '{"type": "Feature", '
+    if @name
+      j += '"properties": {"title": "' + @name + '"},'
     end
-    j += '"geometry": {'
-    j += '"type": "MultiLineString",'
-    j +='"coordinates": ['
+    j += '"geometry": {"type": "MultiLineString", "coordinates": ['
     @segments.each_with_index do |s, index|
       if index > 0
         j += ","
       end
       j += '['
       tsj = ''
+      # NOTE: didn't like any of the alternatives to this dependency that I thought of... so Track knows that each of its segments
+      #   has a coordinate_set
       s.coordinate_set.each do |coord|
         if tsj != ''
           tsj += ','
         end
         tsj += '['
         tsj += "#{coord.lon},#{coord.lat}"
-        if coord.ele != nil
+        if coord.ele
           tsj += ",#{coord.ele}"
         end
         tsj += ']'
